@@ -6,14 +6,17 @@ import PackageDescription
 let package = Package(
     name: "LocalWeb",
     dependencies: [
-        .package(url: "https://github.com/hummingbird-project/hummingbird", from: "0.15.3")
+        .package(url: "https://github.com/hummingbird-project/hummingbird", from: "0.15.3"),
+        .package(url: "https://github.com/JohnSundell/Files", from: "4.2.0")
+
     ],
     targets: [
         .executableTarget(
             name: "LocalWeb",
             dependencies: [
                 .product(name: "Hummingbird", package: "hummingbird"),
-                .product(name: "HummingbirdFoundation", package: "hummingbird")
+                .product(name: "HummingbirdFoundation", package: "hummingbird"),
+                .product(name: "Files", package: "Files"),
             ]),
         .testTarget(
             name: "LocalWebTests",

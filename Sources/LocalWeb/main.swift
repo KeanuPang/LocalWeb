@@ -3,10 +3,9 @@ import HummingbirdFoundation
 
 typealias ServerHost = String
 typealias ServerPort = Int
-typealias ServerRoot = String
 
 enum Server {
-    static func run(host: ServerHost, port: ServerPort, root: ServerRoot) throws {
+    static func run(host: ServerHost, port: ServerPort, root: ServerRootPath) throws {
         let app = HBApplication(
             configuration: .init(
                 address: .hostname(host, port: port),
@@ -14,9 +13,9 @@ enum Server {
             )
         )
 
-        let fileMiddleware = HBFileMiddleware(root, cacheControl: HBCacheControl([]), searchForIndexHtml: true, application: app)
-        app.middleware.add(fileMiddleware)
-        app.middleware.add(HBLogRequestsMiddleware(.info))
+        app.middleware.add(DirectoryIndexMiddleware(root, application: app))
+        app.middleware.add(HBFileMiddleware(root, application: app))
+//        app.middleware.add(HBLogRequestsMiddleware(.info))
 
         try app.start()
         app.wait()
