@@ -13,11 +13,7 @@ public struct DirectoryIndexMiddleware: HBMiddleware {
     let rootFolder: String
 
     public init(_ rootFolder: String, application: HBApplication) {
-        var rootFolder = rootFolder
-        if rootFolder.last == "/" {
-            rootFolder = String(rootFolder.dropLast())
-        }
-        self.rootFolder = rootFolder
+        self.rootFolder = rootFolder.last == "/" ? String(rootFolder.dropLast()) : rootFolder
     }
 
     public func apply(to request: HBRequest, next: HBResponder) -> EventLoopFuture<HBResponse> {

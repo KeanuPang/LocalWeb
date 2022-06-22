@@ -1,15 +1,34 @@
+import Files
+import Foundation
 import Hummingbird
 import HummingbirdFoundation
+import SwiftDotenv
 
 typealias ServerHost = String
 typealias ServerPort = Int
 
+let env = try? Dotenv.load(path: ".env")
+
+func getServerHost() -> ServerHost {
+    env?["serverHost"]?.stringValue ?? "localhost"
+}
+
+func getServerPort() -> ServerPort {
+    Int(env?["serverPort"]?.stringValue ?? "") ?? 7920
+}
+
+func getRootFolder() -> String {
+    return (env?["rootFolder"]?.stringValue) ?? FileManager.default.currentDirectoryPath
+}
+
 enum Server {
     static func run(host: ServerHost, port: ServerPort, root: ServerRootPath) throws {
+        let tls = TSTLSOptions.options(serverIdentity: .p12(filename: "", password: "")) ?? .none
         let app = HBApplication(
             configuration: .init(
                 address: .hostname(host, port: port),
-                serverName: "LocalWeb File Server"
+                serverName: "LocalWeb File Server",
+                tlsOptions: tls
             )
         )
 
@@ -22,6 +41,4 @@ enum Server {
     }
 }
 
-let localIP = NetworkHelper.getIPAddress() ?? "127.0.0.1"
-
-try Server.run(host: "0.0.0.0", port: 7920, root: "/Users/keanupang/Workshop/98. Temp/swift-web")
+try Server.run(host: getServerHost(), port: getServerPort(), root: getRootFolder())
