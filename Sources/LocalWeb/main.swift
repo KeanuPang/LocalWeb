@@ -1,44 +1,39 @@
-import Files
+import ArgumentParser
 import Foundation
 import Hummingbird
-import HummingbirdFoundation
 import SwiftDotenv
 
-typealias ServerHost = String
-typealias ServerPort = Int
+let defaultAddress = "127.0.0.1"
+let defaultPort = 7920
+let defaultRoot = FileManager.default.currentDirectoryPath
 
 let env = try? Dotenv.load(path: ".env")
 
 func getServerHost() -> ServerHost {
-    env?["serverHost"]?.stringValue ?? "localhost"
+    env?["serverHost"]?.stringValue ?? defaultAddress
 }
 
 func getServerPort() -> ServerPort {
-    Int(env?["serverPort"]?.stringValue ?? "") ?? 7920
+    Int(env?["serverPort"]?.stringValue ?? "") ?? defaultPort
 }
 
-func getRootFolder() -> String {
+func getRootFolder() -> ServerRootPath {
     return (env?["rootFolder"]?.stringValue) ?? FileManager.default.currentDirectoryPath
 }
 
-enum Server {
-    static func run(host: ServerHost, port: ServerPort, root: ServerRootPath) throws {
-        let tls = TSTLSOptions.options(serverIdentity: .p12(filename: "", password: "")) ?? .none
-        let app = HBApplication(
-            configuration: .init(
-                address: .hostname(host, port: port),
-                serverName: "LocalWeb File Server",
-                tlsOptions: tls
-            )
-        )
+struct HummingbirdArguments: ParsableCommand {
+    @Option(name: .long)
+    var host: ServerHost = getServerHost()
 
-        app.middleware.add(DirectoryIndexMiddleware(root, application: app))
-        app.middleware.add(HBFileMiddleware(root, application: app))
-        app.middleware.add(HBLogRequestsMiddleware(.info))
+    @Option(name: .long)
+    var port: ServerPort = getServerPort()
 
-        try app.start()
-        app.wait()
+    @Option(name: .long)
+    var root: ServerRootPath = getRootFolder()
+
+    func run() throws {
+        try Server.run(host: self.host, port: self.port, root: self.root)
     }
 }
 
-try Server.run(host: getServerHost(), port: getServerPort(), root: getRootFolder())
+HummingbirdArguments.main()

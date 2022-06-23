@@ -9,8 +9,6 @@ import Files
 import Foundation
 import HummingbirdFoundation
 
-typealias ServerRootPath = String
-
 struct DirectoryIndexPage: HBResponseGenerator {
     var rootFolder: String
     var currentPath: String
