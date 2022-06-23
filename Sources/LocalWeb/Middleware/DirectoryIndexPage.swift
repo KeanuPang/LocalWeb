@@ -36,22 +36,22 @@ struct DirectoryIndexPage: HBResponseGenerator {
         let linkPath = self.currentPath.last == "/" ? self.currentPath : self.currentPath + "/"
         let allPath = self.currentPath.components(separatedBy: "/")
 
-        var navigation: String
+        var navigation = """
+        <p> <strong><a href=" / ">Back to Root</a></strong> </p>
+        """
         if allPath.last?.isEmpty == false {
             let link = allPath.dropLast().joined(separator: "/")
 
-            navigation = """
+            navigation += """
             <p>
                 <strong><a href="\(link.isEmpty ? "/" : link)">Parent Directory</a></strong>
             </p>
             """
-        } else {
-            navigation = ""
         }
 
         let folderList = folders.map {
             """
-            <li><a href="\(linkPath)\($0)">\($0)/</a></li>
+            <li><a href="\(linkPath)\($0)/">\($0)/</a></li>
             """
         }.joined(separator: "")
 

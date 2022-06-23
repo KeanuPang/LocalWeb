@@ -19,7 +19,7 @@ enum Server {
         )
 
         app.middleware.add(DirectoryIndexMiddleware(root, application: app))
-        app.middleware.add(HBFileMiddleware(root, application: app))
+        app.middleware.add(HBFileMiddleware(root, searchForIndexHtml: true, application: app))
         app.middleware.add(HBLogRequestsMiddleware(.info))
 
         try app.start()
