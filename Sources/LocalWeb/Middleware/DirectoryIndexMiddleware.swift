@@ -30,9 +30,8 @@ public struct DirectoryIndexMiddleware: HBMiddleware {
                 return request.failure(.badRequest)
             }
 
-            let fullPath = rootFolder + path
-
             do {
+                let fullPath = rootFolder + path
                 let attributes = try FileManager.default.attributesOfItem(atPath: fullPath)
 
                 if let fileType = attributes[.type] as? FileAttributeType, fileType == .typeDirectory {
